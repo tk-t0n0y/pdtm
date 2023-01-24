@@ -16,8 +16,7 @@ jobs:
         export PATH=$PATH:$GOPATH/bin
     - name: Install pdtm
       run: |
-        go get github.com/projectdiscovery/pdtm
-        go install github.com/projectdiscovery/pdtm
+      go install -v github.com/projectdiscovery/pdtm/cmd/pdtm@latest
 
     - name: Run pdtm
       run : ./pdtm -ia -bp $HOME/binary/ 
