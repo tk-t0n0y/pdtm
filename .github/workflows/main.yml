@@ -1,0 +1,30 @@
+name: Run pdtm and save output
+
+on: [push]
+
+jobs:
+  run-pdtm:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Setup Go environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y golang
+        export GOPATH=$HOME/go
+        export PATH=$PATH:$GOPATH/bin
+    - name: Install pdtm
+      run: |
+        go get github.com/projectdiscovery/pdtm
+        go install github.com/projectdiscovery/pdtm
+    - name: Run pdtm
+      run : ./pdtm -ia -bp $HOME/binary/ 
+   
+    - name: Commit and Push
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git add .
+        git commit -m "Adding PDTM output files"
+        git push
