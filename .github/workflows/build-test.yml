@@ -1,33 +1,30 @@
-name: 🔨 Build Test
+name: Run pdtm and save output
 
-on:
-  pull_request:
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  build:
-    name: Test Builds
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+  run-pdtm:
+    runs-on: ubuntu-latest
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Build
-        run: go build .
-        working-directory: cmd/pdtm/
-
-      - name: Test
-        run: go test ./...
-        working-directory: .
-        
-      - name: Race Condition Tests
-        run: go build -race .
-        working-directory: cmd/pdtm/
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Setup Go environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y golang
+        export GOPATH=$HOME/go
+        export PATH=$PATH:$GOPATH/bin
+    - name: Install pdtm
+      run: |
+        go get github.com/projectdiscovery/pdtm
+        go install github.com/projectdiscovery/pdtm
+    - name: Run pdtm
+      run : ./pdtm -ia -bp $HOME/binary/ 
+   
+    - name: Commit and Push
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git add .
+        git commit -m "Adding PDTM output files"
+        git push
