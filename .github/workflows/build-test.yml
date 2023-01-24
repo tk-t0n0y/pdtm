@@ -1,4 +1,4 @@
-name: Run pdtm
+name: Run test on
 
 on: [push]
 
